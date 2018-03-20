@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+__author__ = 'Michael Liao'
+
 import asyncio, logging
 
 import aiomysql
@@ -129,13 +134,6 @@ class ModelMetaclass(type):
         attrs['__delete__'] = 'delete from `%s` where `%s`=?' % (tableName, primaryKey)
         return type.__new__(cls, name, bases, attrs)
 
-async def close_pool():
-    logging.info('close database connection pool...')
-    global __pool
-    if __pool is not None:
-        __pool.close()
-        await __pool.wait_closed()
-
 class Model(dict, metaclass=ModelMetaclass):
 
     def __init__(self, **kw):
@@ -187,7 +185,7 @@ class Model(dict, metaclass=ModelMetaclass):
                 args.extend(limit)
             else:
                 raise ValueError('Invalid limit value: %s' % str(limit))
-        rs = await select(' '.join(sql), args)
+        rs = await seleanchorModelct(' '.join(sql), args)
         return [cls(**r) for r in rs]
 
     @classmethod
@@ -229,4 +227,3 @@ class Model(dict, metaclass=ModelMetaclass):
         rows = await execute(self.__delete__, args)
         if rows != 1:
             logging.warn('failed to remove by primary key: affected rows: %s' % rows)
-
