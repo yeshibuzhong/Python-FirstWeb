@@ -9,7 +9,7 @@ async web application.
 
 import logging; logging.basicConfig(level=logging.INFO)
 
-import asyncio, os, json, time
+import asyncio, os, json, time, config
 from datetime import datetime
 
 from aiohttp import web
@@ -60,11 +60,8 @@ async def data_factory(app, handler):
 
 async def response_factory(app, handler):
     async def response(request):
-
         logging.info('Response handler...')
-        print(1111)
         r = await handler(request)
-        print(r, 1111)
         if isinstance(r, web.StreamResponse):
             return r
         if isinstance(r, bytes):
@@ -114,17 +111,19 @@ def datetime_filter(t):
     return u'%s年%s月%s日' % (dt.year, dt.month, dt.day)
 
 async def init(loop):
-    await orm.create_pool(loop=loop, host='127.0.0.1', port=3306, user='root', password='root', db='awesome')
+    await orm.create_pool(loop=loop, host=config.configs.db.host, port=config.configs.db.port, user=config.configs.db.user, password=config.configs.db.password, db=config.configs.db.database)
     app = web.Application(loop=loop, middlewares=[
         logger_factory, response_factory
     ])
     init_jinja2(app, filters=dict(datetime=datetime_filter))
     add_routes(app, 'handlers')
     add_static(app)
-    srv = await loop.create_server(app.make_handler(), '127.0.0.1', 9000)
+    srv = await loop.create_server(app.make_handler(), config.configs.db.host, 9000)
     logging.info('server started at http://127.0.0.1:9000...')
     return srv
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init(loop))
 loop.run_forever()
+
+

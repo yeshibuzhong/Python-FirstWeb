@@ -47,10 +47,12 @@ def toDict(d):
 
 configs = config_default.configs
 
-try:
-    import config_override
-    configs = merge(configs, config_override.configs)
-except ImportError:
-    pass
+# try:
+#     import config_override
+#     configs = merge(configs, config_override.configs)
+#     print(configs)
+# except ImportError:
+#     pass
 
 configs = toDict(configs)
+# print(configs)
