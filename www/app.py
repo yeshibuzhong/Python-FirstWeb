@@ -60,8 +60,11 @@ async def data_factory(app, handler):
 
 async def response_factory(app, handler):
     async def response(request):
+
         logging.info('Response handler...')
+        print(1111)
         r = await handler(request)
+        print(r, 1111)
         if isinstance(r, web.StreamResponse):
             return r
         if isinstance(r, bytes):
@@ -84,6 +87,7 @@ async def response_factory(app, handler):
                 resp = web.Response(body=app['__templating__'].get_template(template).render(**r).encode('utf-8'))
                 resp.content_type = 'text/html;charset=utf-8'
                 return resp
+
         if isinstance(r, int) and r >= 100 and r < 600:
             return web.Response(r)
         if isinstance(r, tuple) and len(r) == 2:
