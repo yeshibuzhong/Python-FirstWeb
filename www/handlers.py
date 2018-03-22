@@ -18,3 +18,17 @@ async def index(request):
         '__template__': 'test.html',
         'users': users
     }
+
+@get('/insert')
+async def insert(request):
+    u = User()
+    u.name = 'wanahue';
+    u.email = '123qq.com';
+    u.passwd = 'weglhaisg';
+    u.admin = 'haha';
+    u.image = 'fa.jpg';
+    users = await User.save(u)
+    return {
+        '__template__': 'test.html',
+        'users': users
+    }
